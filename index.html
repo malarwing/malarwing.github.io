@@ -15,7 +15,16 @@
 
     h1 {
       text-align: center;
+      margin-bottom: 10px;
+    }
+
+    .controls {
+      text-align: center;
       margin-bottom: 20px;
+    }
+
+    .controls button {
+      margin: 0 5px;
     }
 
     .wishlist {
@@ -66,24 +75,36 @@
 <body>
   <h1>Wishlist</h1>
 
-  <div class="wishlist">
+  <!-- SORT BUTTONS -->
+  <div class="controls">
+    <button onclick="sortByName()">Sort A–Z</button>
+    <button onclick="sortByOrder()">Original Order</button>
+  </div>
 
-    <div class="card">
+  <div class="wishlist" id="wishlist">
+
+    <div class="card" data-name="Marshall D Teach" data-order="1">
       <img src="MarshallDTeach.png" class="item-img" alt="Marshall D Teach OP09">
       <h2>Marshall D. Teach</h2>
-      <button onclick="openLink('https://www.tcgplayer.com/product/597037/one-piece-card-game--marshall-d-teach-093-wanted-poster?Language=English')">View Item</button>
+      <button onclick="openLink('https://www.tcgplayer.com/product/597037/one-piece-card-game--marshall-d-teach-093-wanted-poster?Language=English')">
+        View Item
+      </button>
     </div>
 
-    <div class="card">
+    <div class="card" data-name="Uta 2023 Collection" data-order="2">
       <img src="Uta2023Collection.png" class="item-img" alt="Uta 2023 Collection">
       <h2>Uta 2023 Collection</h2>
-      <button onclick="openLink('https://www.tcgplayer.com/product/523802/one-piece-card-game--uta-gift-collection-2023?Language=English')">View Item</button>
+      <button onclick="openLink('https://www.tcgplayer.com/product/523802/one-piece-card-game--uta-gift-collection-2023?Language=English')">
+        View Item
+      </button>
     </div>
 
-    <div class="card">
+    <div class="card" data-name="Wanted Luffy OP09" data-order="3">
       <img src="WantedLuffyOP09.png" class="item-img" alt="Wanted Luffy OP09">
       <h2>Wanted Luffy OP09</h2>
-      <button onclick="openLink('https://www.tcgplayer.com/product/596915/one-piece-card-game--monkey-d-luffy-wanted-poster?Language=English')">View Item</button>
+      <button onclick="openLink('https://www.tcgplayer.com/product/596915/one-piece-card-game--monkey-d-luffy-wanted-poster?Language=English')">
+        View Item
+      </button>
     </div>
 
   </div>
@@ -91,6 +112,28 @@
   <script>
     function openLink(url) {
       window.open(url, '_blank');
+    }
+
+    function sortByName() {
+      const wishlist = document.getElementById('wishlist');
+      const cards = Array.from(wishlist.children);
+
+      cards.sort((a, b) =>
+        a.dataset.name.localeCompare(b.dataset.name)
+      );
+
+      cards.forEach(card => wishlist.appendChild(card));
+    }
+
+    function sortByOrder() {
+      const wishlist = document.getElementById('wishlist');
+      const cards = Array.from(wishlist.children);
+
+      cards.sort((a, b) =>
+        a.dataset.order - b.dataset.order
+      );
+
+      cards.forEach(card => wishlist.appendChild(card));
     }
   </script>
 </body>
