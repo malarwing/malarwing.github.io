@@ -118,9 +118,10 @@
 
     .card:hover {
       transform: translateY(-8px) scale(1.02);
-      box-shadow: 0 16px 35px rgba(0,122,255,0.35);
-      border-color: rgba(0,122,255,0.55);
+      box-shadow: 0 16px 35px rgba(255,255,255,0.18);
+      border-color: rgba(255,255,255,0.25);
     }
+
 
     /* Image zoom on hover */
     .item-img {
@@ -357,6 +358,22 @@
 
       row.scrollBy({ left: direction * amount, behavior: 'smooth' });
     }
+      // Convert mouse wheel vertical scroll into horizontal scroll on each row.
+      // Trackpads will still work naturally.
+      document.querySelectorAll('.row').forEach(row => {
+      row.addEventListener('wheel', (e) => {
+      // If the user is holding Shift, let browser handle it (common horizontal gesture)
+      if (e.shiftKey) return;
+
+      // If this row can scroll horizontally, convert wheel -> horizontal
+      const canScroll = row.scrollWidth > row.clientWidth;
+      if (!canScroll) return;
+
+      e.preventDefault();
+      row.scrollLeft += e.deltaY;
+    }, { passive: false });
+  });
+
   </script>
 </body>
 </html>
