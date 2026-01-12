@@ -5,38 +5,189 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Wishlist</title>
 
-  <link rel="manifest" href="manifest.webmanifest">
-  <meta name="theme-color" content="#000000">
-  <link rel="apple-touch-icon" href="icon-192.png">
-
-
-
   <style>
-    /* ===== Animated gradient background (still dark) ===== */
+    :root{
+      --glass: rgba(18,18,18,0.82);
+      --border: rgba(255,255,255,0.14);
+      --glow: rgba(255,255,255,0.18);
+      --text-dim: rgba(255,255,255,0.75);
+    }
+
+    * { box-sizing: border-box; }
+
     body {
+      margin: 0;
       font-family: Arial, sans-serif;
       color: white;
-      padding: 20px;
-      margin: 0;
+      overflow-x: hidden;
 
-      background: linear-gradient(-45deg, #050510, #0b0820, #001a2b, #160016);
-      background-size: 400% 400%;
-      animation: bgShift 14s ease infinite;
+      /* Background behind everything */
+      background: radial-gradient(1200px 700px at 20% 10%, rgba(255,255,255,0.10), transparent 60%),
+                  radial-gradient(1000px 600px at 80% 20%, rgba(255,255,255,0.08), transparent 55%),
+                  linear-gradient(-45deg, #050510, #0b0820, #001a2b, #160016);
+      background-size: auto, auto, 400% 400%;
+      animation: bgShift 18s ease infinite;
     }
 
     @keyframes bgShift {
-      0%   { background-position: 0% 50%; }
-      50%  { background-position: 100% 50%; }
-      100% { background-position: 0% 50%; }
+      0%   { background-position: 0 0, 0 0, 0% 50%; }
+      50%  { background-position: 0 0, 0 0, 100% 50%; }
+      100% { background-position: 0 0, 0 0, 0% 50%; }
     }
 
-    h1 {
+    /* ===== HERO INTRO ===== */
+    .hero {
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      padding: 60px 20px 30px;
+      position: relative;
+    }
+
+    /* extra animated overlay */
+    .hero::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(700px 300px at 50% 20%, rgba(255,255,255,0.10), transparent 60%),
+        radial-gradient(500px 260px at 30% 70%, rgba(255,255,255,0.08), transparent 60%);
+      filter: blur(0px);
+      opacity: 1;
+      pointer-events: none;
+      transition: opacity 0.2s linear;
+    }
+
+    .hero-card {
+      width: min(980px, 100%);
+      background: rgba(0,0,0,0.35);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 18px;
+      padding: 28px 22px;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 18px 50px rgba(0,0,0,0.55);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-title {
+      font-size: clamp(34px, 5vw, 54px);
+      margin: 0 0 10px;
+      letter-spacing: 0.6px;
+      opacity: 0;
+      transform: translateY(12px);
+      animation: spawn 0.8s ease forwards;
+    }
+
+    .hero-sub {
+      margin: 0;
+      color: var(--text-dim);
+      font-size: clamp(14px, 2vw, 18px);
+      line-height: 1.4;
+      max-width: 65ch;
+
+      opacity: 0;
+      transform: translateY(12px);
+      animation: spawn 0.8s ease forwards;
+      animation-delay: 0.12s;
+    }
+
+    .hero-actions {
+      margin-top: 18px;
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+
+      opacity: 0;
+      transform: translateY(12px);
+      animation: spawn 0.8s ease forwards;
+      animation-delay: 0.24s;
+    }
+
+    @keyframes spawn {
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .primary-btn, .ghost-btn {
+      padding: 12px 14px;
+      border-radius: 12px;
+      cursor: pointer;
+      font-weight: 800;
+      border: none;
+      transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+      user-select: none;
+    }
+
+    .primary-btn {
+      background: rgba(255,255,255,0.14);
+      border: 1px solid rgba(255,255,255,0.22);
+      color: white;
+      box-shadow: 0 10px 24px rgba(0,0,0,0.35);
+    }
+    .primary-btn:hover { transform: translateY(-2px); box-shadow: 0 16px 30px rgba(0,0,0,0.45); }
+
+    .ghost-btn {
+      background: rgba(0,0,0,0.25);
+      border: 1px solid rgba(255,255,255,0.16);
+      color: white;
+    }
+    .ghost-btn:hover { transform: translateY(-2px); background: rgba(255,255,255,0.06); }
+
+    .scroll-hint {
+      margin-top: 18px;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      color: rgba(255,255,255,0.65);
+      font-weight: 700;
+
+      opacity: 0;
+      transform: translateY(12px);
+      animation: spawn 0.8s ease forwards;
+      animation-delay: 0.36s;
+    }
+
+    .chev {
+      width: 36px;
+      height: 36px;
+      border-radius: 999px;
+      display: grid;
+      place-items: center;
+      border: 1px solid rgba(255,255,255,0.18);
+      background: rgba(0,0,0,0.25);
+      animation: bob 1.1s ease-in-out infinite;
+    }
+
+    @keyframes bob {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(5px); }
+    }
+
+    /* Hero fade-out on scroll */
+    .hero.fade {
+      opacity: 1;
+      transition: opacity 0.1s linear;
+    }
+
+    /* ===== Wishlist wrapper fade-in ===== */
+    .content {
+      padding: 0 20px 30px;
+      opacity: 0;
+      transform: translateY(10px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+    .content.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* ===== Your existing wishlist styles (slightly polished) ===== */
+    h1.wishlist-title{
       text-align: center;
-      margin-bottom: 22px;
+      margin: 18px 0 26px;
       letter-spacing: 0.4px;
     }
 
-    /* SECTION HEADERS + ARROWS */
     .section {
       max-width: 980px;
       margin: 0 auto 28px;
@@ -62,32 +213,21 @@
       margin-bottom: 14px;
     }
 
-    .row-controls {
-      display: flex;
-      gap: 10px;
-    }
+    .row-controls { display: flex; gap: 10px; }
 
     .arrow {
-      width: auto;
       padding: 10px 12px;
       border-radius: 10px;
       cursor: pointer;
       font-weight: 800;
-
       background: rgba(0,0,0,0.35);
       color: white;
       border: 1px solid rgba(255,255,255,0.18);
-
       transition: transform 0.15s ease, background 0.15s ease;
       user-select: none;
     }
+    .arrow:hover { background: rgba(255,255,255,0.08); transform: translateY(-2px); }
 
-    .arrow:hover {
-      background: rgba(255,255,255,0.08);
-      transform: translateY(-2px);
-    }
-
-    /* HORIZONTAL ROW */
     .row {
       display: flex;
       gap: 16px;
@@ -98,38 +238,31 @@
       scroll-behavior: smooth;
     }
 
-    .row::-webkit-scrollbar {
-      height: 8px;
-    }
-
+    .row::-webkit-scrollbar { height: 8px; }
     .row::-webkit-scrollbar-thumb {
       background: rgba(255,255,255,0.2);
       border-radius: 999px;
     }
 
-    /* CARD */
     .card {
       flex: 0 0 240px;
-      background: rgba(18,18,18,0.85);
+      background: var(--glass);
       border-radius: 14px;
       padding: 16px;
       text-align: center;
       scroll-snap-align: start;
-
-      border: 1px solid rgba(255,255,255,0.10);
+      border: 1px solid var(--border);
       box-shadow: 0 8px 20px rgba(0,0,0,0.45);
-
       transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
     }
 
+    /* WHITE glow on hover */
     .card:hover {
       transform: translateY(-8px) scale(1.02);
-      box-shadow: 0 16px 35px rgba(255,255,255,0.18);
+      box-shadow: 0 16px 35px var(--glow);
       border-color: rgba(255,255,255,0.25);
     }
 
-
-    /* Image zoom on hover */
     .item-img {
       width: 100%;
       height: 160px;
@@ -138,216 +271,234 @@
       transition: transform 0.25s ease;
     }
 
-    .card:hover .item-img {
-      transform: scale(1.08);
-    }
+    .card:hover .item-img { transform: scale(1.08); }
 
     h2 {
       font-size: 18px;
       margin: 10px 0;
     }
 
-    /* BUTTONS (more interactive) */
     button {
       width: 100%;
       padding: 10px;
       border: none;
       border-radius: 10px;
-
-      background: linear-gradient(90deg, #007aff, #00c6ff);
+      background: rgba(255,255,255,0.14);
+      border: 1px solid rgba(255,255,255,0.20);
       color: white;
-      font-weight: bold;
+      font-weight: 800;
       cursor: pointer;
-
-      box-shadow: 0 4px 12px rgba(0,122,255,0.35);
-      transition: transform 0.15s ease, box-shadow 0.15s ease, filter 0.15s ease;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.35);
+      transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease, filter 0.15s ease;
     }
 
+    /* WHITE glow button */
     button:hover {
-      transform: translateY(-2px) scale(1.04);
-      box-shadow: 0 10px 22px rgba(0,122,255,0.55);
-      filter: brightness(1.05);
+      transform: translateY(-2px) scale(1.03);
+      box-shadow: 0 10px 22px rgba(255,255,255,0.12);
+      background: rgba(255,255,255,0.18);
+      filter: brightness(1.06);
     }
 
-    button:active {
-      transform: translateY(1px) scale(0.98);
-      box-shadow: 0 4px 10px rgba(0,122,255,0.35);
-    }
+    button:active { transform: translateY(1px) scale(0.98); }
+
   </style>
 </head>
 
 <body>
-  <h1>Wishlist</h1>
 
-  <!-- ===================== -->
-  <!-- WANTED SET -->
-  <!-- ===================== -->
-  <div class="section">
-    <div class="section-head">
-      <div class="section-title">Wanted Set</div>
-      <div class="row-controls">
-        <div class="arrow" onclick="scrollRow('row-wanted', -1)">◀</div>
-        <div class="arrow" onclick="scrollRow('row-wanted', 1)">▶</div>
+  <!-- ===== INTRO HERO (spawns text + cool bg) ===== -->
+  <header class="hero fade" id="hero">
+    <div class="hero-card">
+      <h1 class="hero-title">Wishlist</h1>
+      <p class="hero-sub">
+        A clean, scrollable wishlist with sections, hover effects, and quick links.
+        Scroll down to view the cards.
+      </p>
+
+      <div class="hero-actions">
+        <button class="primary-btn" onclick="document.getElementById('wishlist').scrollIntoView({behavior:'smooth'})">
+          Jump to Wishlist
+        </button>
+        <button class="ghost-btn" onclick="window.scrollTo({top: document.getElementById('wishlist').offsetTop, behavior:'smooth'})">
+          Scroll
+        </button>
+      </div>
+
+      <div class="scroll-hint">
+        <div class="chev">⌄</div>
+        <span>Scroll down</span>
       </div>
     </div>
-    <hr class="divider">
+  </header>
 
-    <div class="row" id="row-wanted" data-sort>
-      <!-- LOWER NUMBER = SHOWS FIRST -->
+  <!-- ===== WISHLIST CONTENT (fades in) ===== -->
+  <main class="content" id="wishlist">
+    <h1 class="wishlist-title">Wishlist</h1>
 
-      <div class="card" data-order="2">
-        <img src="WantedLuffyOP09.png" class="item-img" alt="Luffy OP09">
-        <h2>Luffy OP09</h2>
-        <button onclick="openLink('https://www.tcgplayer.com/product/596915/one-piece-card-game-emperors-in-the-new-world-monkeydluffy-wanted-poster?Condition=Near+Mint&page=1&Language=English')">
-          View Item
-        </button>
+    <!-- ===================== -->
+    <!-- WANTED SET -->
+    <!-- ===================== -->
+    <div class="section">
+      <div class="section-head">
+        <div class="section-title">Wanted Set</div>
+        <div class="row-controls">
+          <div class="arrow" onclick="scrollRow('row-wanted', -1)">◀</div>
+          <div class="arrow" onclick="scrollRow('row-wanted', 1)">▶</div>
+        </div>
       </div>
+      <hr class="divider">
 
-      <div class="card" data-order="5">
-        <img src="MarshallDTeach.png" class="item-img" alt="Marshall D Teach OP09">
-        <h2>Marshall D. Teach</h2>
-        <button onclick="openLink('https://www.tcgplayer.com/product/597037/one-piece-card-game-emperors-in-the-new-world-marshalldteach-093-wanted-poster?Condition=Near+Mint&page=1&Language=English')">
-          View Item
-        </button>
+      <div class="row" id="row-wanted" data-sort>
+        <!-- LOWER NUMBER = SHOWS FIRST -->
+
+        <div class="card" data-order="2">
+          <img src="WantedLuffyOP09.png" class="item-img" alt="Luffy (OP09)">
+          <h2>Wanted Luffy OP09</h2>
+          <button onclick="openLink('https://www.tcgplayer.com/product/596915/one-piece-card-game-emperors-in-the-new-world-monkeydluffy-wanted-poster?Condition=Near+Mint&page=1&Language=English')">
+            View Item
+          </button>
+        </div>
+
+        <div class="card" data-order="5">
+          <img src="MarshallDTeach.png" class="item-img" alt="Marshall D Teach OP09">
+          <h2>Marshall D. Teach</h2>
+          <button onclick="openLink('https://www.tcgplayer.com/product/597037/one-piece-card-game-emperors-in-the-new-world-marshalldteach-093-wanted-poster?Condition=Near+Mint&page=1&Language=English')">
+            View Item
+          </button>
+        </div>
+
+        <div class="card" data-order="1">
+          <img src="Ace.png" class="item-img" alt="Ace">
+          <h2>Ace</h2>
+          <button onclick="openLink('https://www.tcgplayer.com/product/657409/one-piece-card-game-carrying-on-his-will-portgasdace-119-wanted-poster?Condition=Near+Mint&page=1&Language=English')">
+            View Item
+          </button>
+        </div>
+
+        <div class="card" data-order="3">
+          <img src="Luffy (OP13).png" class="item-img" alt="Luffy (OP13)">
+          <h2>Luffy (OP13)</h2>
+          <button onclick="openLink('https://www.tcgplayer.com/product/657404/one-piece-card-game-carrying-on-his-will-monkeydluffy-118-wanted-poster?Condition=Near+Mint&page=1&Language=English')">
+            View Item
+          </button>
+        </div>
+
+        <div class="card" data-order="4">
+          <img src="Roger.png" class="item-img" alt="Roger">
+          <h2>Roger</h2>
+          <button onclick="openLink('https://www.tcgplayer.com/product/657446/one-piece-card-game-carrying-on-his-will-goldroger-op09-118-sp-wanted-poster?Condition=Near+Mint&page=1&Language=English')">
+            View Item
+          </button>
+        </div>
+
+        <div class="card" data-order="6">
+          <img src="Sabo.png" class="item-img" alt="Sabo">
+          <h2>Sabo</h2>
+          <button onclick="openLink('https://www.tcgplayer.com/product/657414/one-piece-card-game-carrying-on-his-will-sabo-120-wanted-poster?Condition=Near+Mint&page=1&Language=English')">
+            View Item
+          </button>
+        </div>
+
       </div>
-
-      <div class="card" data-order="1">
-        <img src="Ace.png" class="item-img" alt="Ace">
-        <h2>Ace</h2>
-        <button onclick="openLink('https://www.tcgplayer.com/product/657409/one-piece-card-game-carrying-on-his-will-portgasdace-119-wanted-poster?Condition=Near+Mint&page=1&Language=English')">
-          View Item
-        </button>
-      </div>
-
-      <div class="card" data-order="3">
-        <img src="Luffy (OP13).png" class="item-img" alt="Luffy (OP13)">
-        <h2>Luffy (OP13)</h2>
-        <button onclick="openLink('https://www.tcgplayer.com/product/657404/one-piece-card-game-carrying-on-his-will-monkeydluffy-118-wanted-poster?Condition=Near+Mint&page=1&Language=English')">
-          View Item
-        </button>
-      </div>
-
-      <div class="card" data-order="4">
-        <img src="Roger.png" class="item-img" alt="Roger">
-        <h2>Roger</h2>
-        <button onclick="openLink('https://www.tcgplayer.com/product/657446/one-piece-card-game-carrying-on-his-will-goldroger-op09-118-sp-wanted-poster?Condition=Near+Mint&page=1&Language=English')">
-          View Item
-        </button>
-      </div>
-
-      <div class="card" data-order="6">
-        <img src="Sabo.png" class="item-img" alt="Sabo">
-        <h2>Sabo</h2>
-        <button onclick="openLink('https://www.tcgplayer.com/product/657414/one-piece-card-game-carrying-on-his-will-sabo-120-wanted-poster?Condition=Near+Mint&page=1&Language=English')">
-          View Item
-        </button>
-      </div>
-
     </div>
-  </div>
 
-  <!-- ===================== -->
-  <!-- GIFT COLLECTION 2023 -->
-  <!-- ===================== -->
-  <div class="section">
-    <div class="section-head">
-      <div class="section-title">Gift Collection 2023</div>
-      <div class="row-controls">
-        <div class="arrow" onclick="scrollRow('row-gift', -1)">◀</div>
-        <div class="arrow" onclick="scrollRow('row-gift', 1)">▶</div>
+    <!-- ===================== -->
+    <!-- GIFT COLLECTION 2023 -->
+    <!-- ===================== -->
+    <div class="section">
+      <div class="section-head">
+        <div class="section-title">Gift Collection 2023</div>
+        <div class="row-controls">
+          <div class="arrow" onclick="scrollRow('row-gift', -1)">◀</div>
+          <div class="arrow" onclick="scrollRow('row-gift', 1)">▶</div>
+        </div>
+      </div>
+      <hr class="divider">
+
+      <div class="row" id="row-gift" data-sort>
+
+        <div class="card" data-order="9">
+          <img src="Uta2023Collection.png" class="item-img" alt="Uta">
+          <h2>Uta</h2>
+          <button onclick="openLink('https://www.tcgplayer.com/product/523802/one-piece-card-game-one-piece-promotion-cards-uta-gift-collection-2023?Language=English&Condition=Near+Mint&page=1')">
+            View Item
+          </button>
+        </div>
+
+        <div class="card" data-order="6">
+          <img src="Ace2023Gift.png" class="item-img" alt="Ace">
+          <h2>Ace</h2>
+          <button onclick="openLink('https://www.tcgplayer.com/product/523782/one-piece-card-game-one-piece-promotion-cards-portgasdace-gift-collection-2023?Language=English&Condition=Near+Mint&page=1')">
+            View Item
+          </button>
+        </div>
+
+        <div class="card" data-order="4">
+          <img src="Boa2023Gift.png" class="item-img" alt="Boa">
+          <h2>Boa</h2>
+          <button onclick="openLink('https://www.tcgplayer.com/product/523761/one-piece-card-game-one-piece-promotion-cards-boa-hancock-gift-collection-2023?Language=English&Condition=Near+Mint&page=1')">
+            View Item
+          </button>
+        </div>
+
+        <div class="card" data-order="2">
+          <img src="Luffy2023Gift.png" class="item-img" alt="Luffy">
+          <h2>Luffy</h2>
+          <button onclick="openLink('https://www.tcgplayer.com/product/523785/one-piece-card-game-one-piece-promotion-cards-monkeydluffy-gift-collection-2023?Language=English&Condition=Near+Mint&page=1')">
+            View Item
+          </button>
+        </div>
+
+        <div class="card" data-order="1">
+          <img src="Nami2023Gift.png" class="item-img" alt="Nami">
+          <h2>Nami</h2>
+          <button onclick="openLink('https://www.tcgplayer.com/product/523775/one-piece-card-game-one-piece-promotion-cards-nami-gift-collection-2023?Language=English&Condition=Near+Mint&page=1')">
+            View Item
+          </button>
+        </div>
+
+        <div class="card" data-order="5">
+          <img src="Robin2023Gift.png" class="item-img" alt="Robin">
+          <h2>Robin</h2>
+          <button onclick="openLink('https://www.tcgplayer.com/product/523820/one-piece-card-game-one-piece-promotion-cards-nico-robin-gift-collection-2023?Language=English&Condition=Near+Mint&page=1')">
+            View Item
+          </button>
+        </div>
+
+        <div class="card" data-order="7">
+          <img src="Sanji2023Gift.png" class="item-img" alt="Sanji">
+          <h2>Sanji</h2>
+          <button onclick="openLink('https://www.tcgplayer.com/product/523811/one-piece-card-game-one-piece-promotion-cards-sanji-gift-collection-2023?Language=English&Condition=Near+Mint&page=1')">
+            View Item
+          </button>
+        </div>
+
+        <div class="card" data-order="8">
+          <img src="Yamato2023Gift.png" class="item-img" alt="Yamato">
+          <h2>Yamato</h2>
+          <button onclick="openLink('https://www.tcgplayer.com/product/523763/one-piece-card-game-one-piece-promotion-cards-yamato-gift-collection-2023?Language=English&Condition=Near+Mint&page=1')">
+            View Item
+          </button>
+        </div>
+
+        <div class="card" data-order="3">
+          <img src="Zoro2023Gift.png" class="item-img" alt="Zoro">
+          <h2>Zoro</h2>
+          <button onclick="openLink('https://www.tcgplayer.com/product/523812/one-piece-card-game-one-piece-promotion-cards-roronoa-zoro-gift-collection-2023?Language=English&Condition=Near+Mint&page=1')">
+            View Item
+          </button>
+        </div>
+
       </div>
     </div>
-    <hr class="divider">
 
-    <div class="row" id="row-gift" data-sort>
+  </main>
 
-      <div class="card" data-order="9">
-        <img src="Uta2023Collection.png" class="item-img" alt="Uta">
-        <h2>Uta</h2>
-        <button onclick="openLink('https://www.tcgplayer.com/product/523802/one-piece-card-game-one-piece-promotion-cards-uta-gift-collection-2023?Language=English&Condition=Near+Mint&page=1')">
-          View Item
-        </button>
-      </div>
-
-      <div class="card" data-order="6">
-        <img src="Ace2023Gift.png" class="item-img" alt="Ace">
-        <h2>Ace</h2>
-        <button onclick="openLink('https://www.tcgplayer.com/product/523782/one-piece-card-game-one-piece-promotion-cards-portgasdace-gift-collection-2023?Language=English&Condition=Near+Mint&page=1')">
-          View Item
-        </button>
-      </div>
-
-      <div class="card" data-order="4">
-        <img src="Boa2023Gift.png" class="item-img" alt="Boa">
-        <h2>Boa</h2>
-        <button onclick="openLink('https://www.tcgplayer.com/product/523761/one-piece-card-game-one-piece-promotion-cards-boa-hancock-gift-collection-2023?Language=English&Condition=Near+Mint&page=1')">
-          View Item
-        </button>
-      </div>
-
-      <div class="card" data-order="2">
-        <img src="Luffy2023Gift.png" class="item-img" alt="Luffy">
-        <h2>Luffy</h2>
-        <button onclick="openLink('https://www.tcgplayer.com/product/523785/one-piece-card-game-one-piece-promotion-cards-monkeydluffy-gift-collection-2023?Language=English&Condition=Near+Mint&page=1')">
-          View Item
-        </button>
-      </div>
-
-      <div class="card" data-order="1">
-        <img src="Nami2023Gift.png" class="item-img" alt="Nami">
-        <h2>Nami</h2>
-        <button onclick="openLink('https://www.tcgplayer.com/product/523775/one-piece-card-game-one-piece-promotion-cards-nami-gift-collection-2023?Language=English&Condition=Near+Mint&page=1')">
-          View Item
-        </button>
-      </div>
-
-      <div class="card" data-order="5">
-        <img src="Robin2023Gift.png" class="item-img" alt="Robin">
-        <h2>Robin</h2>
-        <button onclick="openLink('https://www.tcgplayer.com/product/523820/one-piece-card-game-one-piece-promotion-cards-nico-robin-gift-collection-2023?Language=English&Condition=Near+Mint&page=1')">
-          View Item
-        </button>
-      </div>
-
-      <div class="card" data-order="7">
-        <img src="Sanji2023Gift.png" class="item-img" alt="Sanji">
-        <h2>Sanji</h2>
-        <button onclick="openLink('https://www.tcgplayer.com/product/523811/one-piece-card-game-one-piece-promotion-cards-sanji-gift-collection-2023?Language=English&Condition=Near+Mint&page=1')">
-          View Item
-        </button>
-      </div>
-
-      <div class="card" data-order="8">
-        <img src="Yamato2023Gift.png" class="item-img" alt="Yamato">
-        <h2>Yamato</h2>
-        <button onclick="openLink('https://www.tcgplayer.com/product/523763/one-piece-card-game-one-piece-promotion-cards-yamato-gift-collection-2023?Language=English&Condition=Near+Mint&page=1')">
-          View Item
-        </button>
-      </div>
-
-      <div class="card" data-order="3">
-        <img src="Zoro2023Gift.png" class="item-img" alt="Zoro">
-        <h2>Zoro</h2>
-        <button onclick="openLink('https://www.tcgplayer.com/product/523812/one-piece-card-game-one-piece-promotion-cards-roronoa-zoro-gift-collection-2023?Language=English&Condition=Near+Mint&page=1')">
-          View Item
-        </button>
-      </div>
-
-    </div>
-  </div>
-
-  <!-- ===================== -->
-  <!-- SCRIPT -->
-  <!-- ===================== -->
   <script>
-    if ("serviceWorker" in navigator) {
-  navigator.serviceWorker.register("./sw.js");
-    }
-
     // Sort cards INSIDE each row by data-order
     document.querySelectorAll('[data-sort]').forEach(row => {
       const cards = Array.from(row.children);
-
       cards
         .sort((a, b) => (a.dataset.order || 0) - (b.dataset.order || 0))
         .forEach(card => row.appendChild(card));
@@ -365,25 +516,41 @@
       const cardWidth = 240;
       const gap = 16;
       const amount = (cardWidth + gap) * 2; // ~2 cards per click
-
       row.scrollBy({ left: direction * amount, behavior: 'smooth' });
     }
-      // Convert mouse wheel vertical scroll into horizontal scroll on each row.
-      // Trackpads will still work naturally.
-      document.querySelectorAll('.row').forEach(row => {
+
+    // Mouse wheel vertical -> horizontal scroll on rows (trackpad still works)
+    document.querySelectorAll('.row').forEach(row => {
       row.addEventListener('wheel', (e) => {
-      // If the user is holding Shift, let browser handle it (common horizontal gesture)
-      if (e.shiftKey) return;
+        if (e.shiftKey) return; // allow shift+wheel normal behavior
+        if (row.scrollWidth <= row.clientWidth) return;
+        e.preventDefault();
+        row.scrollLeft += e.deltaY;
+      }, { passive: false });
+    });
 
-      // If this row can scroll horizontally, convert wheel -> horizontal
-      const canScroll = row.scrollWidth > row.clientWidth;
-      if (!canScroll) return;
+    // Fade the hero out as you scroll down
+    const hero = document.getElementById('hero');
+    const content = document.getElementById('wishlist');
 
-      e.preventDefault();
-      row.scrollLeft += e.deltaY;
-    }, { passive: false });
-  });
+    function onScroll() {
+      const y = window.scrollY;
+      const fadeDistance = window.innerHeight * 0.7;
+      const opacity = Math.max(0, 1 - (y / fadeDistance));
+      hero.style.opacity = opacity;
+      hero.style.pointerEvents = opacity < 0.2 ? 'none' : 'auto';
+    }
+    window.addEventListener('scroll', onScroll);
+    onScroll();
 
+    // Fade wishlist in when it enters view
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) content.classList.add('visible');
+      });
+    }, { threshold: 0.12 });
+
+    observer.observe(content);
   </script>
 </body>
 </html>
